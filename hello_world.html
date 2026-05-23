@@ -16,6 +16,8 @@
       --muted: #666;
       --up-color: #4ade80;
       --down-color: #f97316;
+      --added-color: #a78bfa;
+      --atcd-color: #f472b6;
       --btn-bg: #26262c;
       --btn-hover: #32323a;
     }
@@ -39,7 +41,6 @@
       gap: 1.2rem;
       position: relative;
     }
-
     .bg-circles span { position: absolute; border-radius: 50%; pointer-events: none; }
     .bg-circles .c1 { width: 320px; height: 320px; background: #3b82f6; opacity: .06; top: -80px; right: -120px; }
     .bg-circles .c2 { width: 200px; height: 200px; background: #f59e0b; opacity: .06; bottom: -40px; left: -100px; }
@@ -79,7 +80,7 @@
 
     .divider {
       width: 100%;
-      max-width: 700px;
+      max-width: 1200px;
       display: flex;
       align-items: center;
       gap: 1rem;
@@ -99,7 +100,7 @@
       flex-wrap: wrap;
       justify-content: center;
       width: 100%;
-      max-width: 800px;
+      max-width: 1200px;
     }
 
     .card {
@@ -112,27 +113,33 @@
       align-items: center;
       gap: 1.5rem;
       flex: 1;
-      min-width: 280px;
+      min-width: 240px;
       position: relative;
       overflow: hidden;
     }
     .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0; }
-    .card.up::before { background: var(--up-color); }
-    .card.down::before { background: var(--down-color); }
+    .card.down::before  { background: var(--down-color); }
+    .card.up::before    { background: var(--up-color); }
+    .card.added::before { background: var(--added-color); }
+    .card.atcd::before  { background: var(--atcd-color); }
 
     .card-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; align-self: flex-start; }
-    .card.up .card-label { color: var(--up-color); }
-    .card.down .card-label { color: var(--down-color); }
+    .card.down .card-label  { color: var(--down-color); }
+    .card.up .card-label    { color: var(--up-color); }
+    .card.added .card-label { color: var(--added-color); }
+    .card.atcd .card-label  { color: var(--atcd-color); }
 
-    .display { font-family: 'DM Mono', monospace; font-size: clamp(42px, 8vw, 64px); font-weight: 400; letter-spacing: -1px; line-height: 1; }
-    .card.up .display { color: var(--up-color); }
-    .card.down .display { color: var(--down-color); }
+    .display { font-family: 'DM Mono', monospace; font-size: clamp(34px, 5vw, 56px); font-weight: 400; letter-spacing: -1px; line-height: 1; }
+    .card.down .display  { color: var(--down-color); }
+    .card.up .display    { color: var(--up-color); }
+    .card.added .display { color: var(--added-color); }
+    .card.atcd .display  { color: var(--atcd-color); }
     .card.down .display.danger { color: #ef4444; animation: blink 0.8s step-end infinite; }
+    .card.atcd .display.danger { color: #ef4444; animation: blink 0.8s step-end infinite; }
 
     .millis { font-size: 0.35em; color: var(--muted); vertical-align: middle; }
 
     .countdown-input-row { display: flex; align-items: center; gap: 0.5rem; }
-
     .time-input {
       width: 52px;
       background: var(--btn-bg);
@@ -166,12 +173,16 @@
     button:hover { background: var(--btn-hover); }
     button:active { transform: scale(0.96); }
     button.primary { border-color: transparent; }
-    .card.down button.primary { background: var(--down-color); color: #0e0e10; }
+    .card.down button.primary  { background: var(--down-color); color: #0e0e10; }
     .card.down button.primary:hover { background: #fdba74; }
+    .card.added button.primary { background: var(--added-color); color: #0e0e10; }
+    .card.added button.primary:hover { background: #c4b5fd; }
+    .card.atcd button.primary  { background: var(--atcd-color); color: #0e0e10; }
+    .card.atcd button.primary:hover { background: #f9a8d4; }
 
     .progress-ring { position: relative; width: 80px; height: 80px; }
     .progress-ring svg { transform: rotate(-90deg); }
-    .ring-bg { fill: none; stroke: var(--border); stroke-width: 4; }
+    .ring-bg   { fill: none; stroke: var(--border); stroke-width: 4; }
     .ring-fill { fill: none; stroke: var(--down-color); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.5s linear; }
     .ring-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
 
@@ -180,7 +191,18 @@
 
     .sw-hint { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; text-align: center; }
 
-    @keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+    .atcd-source {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-align: center;
+    }
+    .atcd-source span {
+      color: var(--added-color);
+    }
+
+    @keyframes rise  { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes pulse { 0%, 100% { transform: scale(1); opacity: .6; } 50% { transform: scale(1.6); opacity: 1; } }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
   </style>
@@ -189,9 +211,7 @@
 
   <div class="hero">
     <div class="bg-circles">
-      <span class="c1"></span>
-      <span class="c2"></span>
-      <span class="c3"></span>
+      <span class="c1"></span><span class="c2"></span><span class="c3"></span>
     </div>
     <div class="greeting"><em>Hello</em> World</div>
     <div class="sub"><span class="dot"></span> welcome to the web <span class="dot"></span></div>
@@ -201,14 +221,7 @@
 
   <div class="timers">
 
-    <!-- Stopwatch — controlled by countdown -->
-    <div class="card up">
-      <div class="card-label">Stopwatch</div>
-      <div class="display" id="sw-display">00:00<span class="millis">.00</span></div>
-      <div class="sw-hint">starts with the countdown</div>
-    </div>
-
-    <!-- Countdown — controls both -->
+    <!-- 1. Countdown -->
     <div class="card down">
       <div class="card-label">Countdown</div>
       <div class="countdown-input-row" id="cd-input-row">
@@ -232,96 +245,95 @@
       </div>
     </div>
 
+    <!-- 2. Stopwatch -->
+    <div class="card up">
+      <div class="card-label">Stopwatch</div>
+      <div class="display" id="sw-display">00:00<span class="millis">.00</span></div>
+      <div class="sw-hint">starts with the countdown</div>
+    </div>
+
+    <!-- 3. Added Time -->
+    <div class="card added">
+      <div class="card-label">Added Time</div>
+      <div class="display" id="at-display">00:00<span class="millis">.00</span></div>
+      <div class="controls">
+        <button class="primary" id="at-btn" onclick="atToggle()">Start</button>
+        <button onclick="atReset()">Reset</button>
+      </div>
+    </div>
+
+    <!-- 4. Added Time Countdown -->
+    <div class="card atcd">
+      <div class="card-label">Added Time Countdown</div>
+      <div class="display" id="atcd-display">00:00<span class="millis">.00</span></div>
+      <div class="atcd-source" id="atcd-source">set from <span>added time</span></div>
+      <div class="done-banner" id="atcd-done">Time's up!</div>
+      <div class="controls">
+        <button class="primary" id="atcd-btn" onclick="atcdToggle()">Start</button>
+        <button onclick="atcdReset()">Reset</button>
+      </div>
+    </div>
+
   </div>
 
   <script>
-    // --- Shared interval ---
-    let ticker = null;
-    let running = false;
-
-    // Stopwatch state
+    // ── 1 & 2: Countdown + Stopwatch (linked) ──
+    let mainTicker = null, mainRunning = false;
     let swElapsed = 0, swStart = 0;
-
-    // Countdown state
     let cdRemaining = 0, cdTotal = 0, cdStart = 0;
 
-    function tick() {
+    function mainTick() {
       const now = Date.now();
-
-      // Stopwatch
       swElapsed = now - swStart;
-      const swMs = swElapsed % 1000;
-      const swS = Math.floor(swElapsed / 1000) % 60;
-      const swM = Math.floor(swElapsed / 60000);
+      const swMs = swElapsed%1000, swS = Math.floor(swElapsed/1000)%60, swM = Math.floor(swElapsed/60000);
       document.getElementById('sw-display').innerHTML =
-        pad(swM) + ':' + pad(swS) + '<span class="millis">.' + pad(Math.floor(swMs/10)) + '</span>';
+        pad(swM)+':'+pad(swS)+'<span class="millis">.'+pad(Math.floor(swMs/10))+'</span>';
 
-      // Countdown
       cdRemaining = Math.max(0, cdTotal - (now - cdStart));
-      const cdMs = cdRemaining % 1000;
-      const cdS = Math.floor(cdRemaining / 1000) % 60;
-      const cdM = Math.floor(cdRemaining / 60000);
-      const pct = cdTotal > 0 ? cdRemaining / cdTotal : 0;
-
+      const cdMs = cdRemaining%1000, cdS = Math.floor(cdRemaining/1000)%60, cdM = Math.floor(cdRemaining/60000);
+      const pct = cdTotal > 0 ? cdRemaining/cdTotal : 0;
       document.getElementById('cd-display').innerHTML =
-        pad(cdM) + ':' + pad(cdS) + '<span class="millis">.' + pad(Math.floor(cdMs/10)) + '</span>';
-      document.getElementById('ring-fill').style.strokeDashoffset = 213.6 * (1 - pct);
-      document.getElementById('ring-pct').textContent = Math.ceil(pct * 100) + '%';
+        pad(cdM)+':'+pad(cdS)+'<span class="millis">.'+pad(Math.floor(cdMs/10))+'</span>';
+      document.getElementById('ring-fill').style.strokeDashoffset = 213.6*(1-pct);
+      document.getElementById('ring-pct').textContent = Math.ceil(pct*100)+'%';
 
-      const dispEl = document.getElementById('cd-display');
-      if (cdRemaining <= 10000) dispEl.classList.add('danger');
-      else dispEl.classList.remove('danger');
+      const disp = document.getElementById('cd-display');
+      if (cdRemaining <= 10000) disp.classList.add('danger'); else disp.classList.remove('danger');
 
       if (cdRemaining === 0) {
-        stopAll();
+        clearInterval(mainTicker); mainTicker = null; mainRunning = false;
         document.getElementById('cd-btn').textContent = 'Start';
         document.getElementById('done-banner').classList.add('visible');
       }
     }
 
-    function stopAll() {
-      clearInterval(ticker);
-      ticker = null;
-      running = false;
-    }
-
     function cdToggle() {
       const btn = document.getElementById('cd-btn');
-      const inputRow = document.getElementById('cd-input-row');
-      const display = document.getElementById('cd-display');
-      const ring = document.getElementById('cd-ring');
-      const done = document.getElementById('done-banner');
-
-      if (!running) {
-        // First start
+      if (!mainRunning) {
         if (cdRemaining === 0) {
           cdTotal = cdGetInput();
           if (cdTotal === 0) return;
           cdRemaining = cdTotal;
         }
-        done.classList.remove('visible');
-        inputRow.style.display = 'none';
-        display.style.display = '';
-        ring.style.display = '';
-
+        document.getElementById('done-banner').classList.remove('visible');
+        document.getElementById('cd-input-row').style.display = 'none';
+        document.getElementById('cd-display').style.display = '';
+        document.getElementById('cd-ring').style.display = '';
         const now = Date.now();
         cdStart = now - (cdTotal - cdRemaining);
         swStart = now - swElapsed;
-
-        ticker = setInterval(tick, 50);
-        running = true;
+        mainTicker = setInterval(mainTick, 50);
+        mainRunning = true;
         btn.textContent = 'Pause';
       } else {
-        // Pause
-        stopAll();
+        clearInterval(mainTicker); mainTicker = null; mainRunning = false;
         btn.textContent = 'Resume';
       }
     }
 
     function cdReset() {
-      stopAll();
-      swElapsed = 0;
-      cdRemaining = 0; cdTotal = 0;
+      clearInterval(mainTicker); mainTicker = null; mainRunning = false;
+      swElapsed = 0; cdRemaining = 0; cdTotal = 0;
       document.getElementById('cd-btn').textContent = 'Start';
       document.getElementById('cd-display').style.display = 'none';
       document.getElementById('cd-ring').style.display = 'none';
@@ -332,12 +344,118 @@
     }
 
     function cdGetInput() {
-      const m = parseInt(document.getElementById('cd-min').value) || 0;
-      const s = parseInt(document.getElementById('cd-sec').value) || 0;
-      return (m * 60 + s) * 1000;
+      const m = parseInt(document.getElementById('cd-min').value)||0;
+      const s = parseInt(document.getElementById('cd-sec').value)||0;
+      return (m*60+s)*1000;
     }
 
-    function pad(n) { return String(n).padStart(2, '0'); }
+    // ── 3: Added Time (independent stopwatch) ──
+    let atTicker = null, atRunning = false, atElapsed = 0, atStart = 0;
+
+    function atToggle() {
+      const btn = document.getElementById('at-btn');
+      if (!atRunning) {
+        atStart = Date.now() - atElapsed;
+        atTicker = setInterval(atTick, 50);
+        atRunning = true;
+        btn.textContent = 'Pause';
+      } else {
+        clearInterval(atTicker); atTicker = null; atRunning = false;
+        btn.textContent = 'Resume';
+      }
+    }
+
+    function atTick() {
+      atElapsed = Date.now() - atStart;
+      const ms = atElapsed%1000, s = Math.floor(atElapsed/1000)%60, m = Math.floor(atElapsed/60000);
+      document.getElementById('at-display').innerHTML =
+        pad(m)+':'+pad(s)+'<span class="millis">.'+pad(Math.floor(ms/10))+'</span>';
+      // Keep ATCD display in sync if not yet started
+      if (!atcdStarted) {
+        const roundedMs = roundUpToMinute(atElapsed);
+        const rm = Math.floor(roundedMs/60000), rs = Math.floor((roundedMs%60000)/1000);
+        document.getElementById('atcd-display').innerHTML =
+          pad(rm)+':'+pad(rs)+'<span class="millis">.00</span>';
+        document.getElementById('atcd-source').innerHTML =
+          'set from <span>added time</span> &mdash; <span style="color:var(--atcd-color)">'
+          + pad(rm)+'m</span>';
+      }
+    }
+
+    function atReset() {
+      clearInterval(atTicker); atTicker = null; atRunning = false; atElapsed = 0;
+      document.getElementById('at-btn').textContent = 'Start';
+      document.getElementById('at-display').innerHTML = '00:00<span class="millis">.00</span>';
+      if (!atcdStarted) {
+        document.getElementById('atcd-display').innerHTML = '00:00<span class="millis">.00</span>';
+        document.getElementById('atcd-source').innerHTML = 'set from <span>added time</span>';
+      }
+    }
+
+    // ── 4: Added Time Countdown ──
+    let atcdTicker = null, atcdRunning = false, atcdStarted = false;
+    let atcdRemaining = 0, atcdTotal = 0, atcdStart = 0;
+
+    function roundUpToMinute(ms) {
+      if (ms === 0) return 0;
+      return Math.ceil(ms / 60000) * 60000;
+    }
+
+    function atcdToggle() {
+      const btn = document.getElementById('atcd-btn');
+      if (!atcdRunning) {
+        // On first start, snapshot rounded added time
+        if (!atcdStarted) {
+          atcdTotal = roundUpToMinute(atElapsed);
+          if (atcdTotal === 0) return;
+          atcdRemaining = atcdTotal;
+          atcdStarted = true;
+        }
+        document.getElementById('atcd-done').classList.remove('visible');
+        atcdStart = Date.now() - (atcdTotal - atcdRemaining);
+        atcdTicker = setInterval(atcdTick, 50);
+        atcdRunning = true;
+        btn.textContent = 'Pause';
+      } else {
+        clearInterval(atcdTicker); atcdTicker = null; atcdRunning = false;
+        btn.textContent = 'Resume';
+      }
+    }
+
+    function atcdTick() {
+      atcdRemaining = Math.max(0, atcdTotal - (Date.now() - atcdStart));
+      const ms = atcdRemaining%1000, s = Math.floor(atcdRemaining/1000)%60, m = Math.floor(atcdRemaining/60000);
+      document.getElementById('atcd-display').innerHTML =
+        pad(m)+':'+pad(s)+'<span class="millis">.'+pad(Math.floor(ms/10))+'</span>';
+
+      const disp = document.getElementById('atcd-display');
+      if (atcdRemaining <= 10000) disp.classList.add('danger'); else disp.classList.remove('danger');
+
+      if (atcdRemaining === 0) {
+        clearInterval(atcdTicker); atcdTicker = null; atcdRunning = false;
+        document.getElementById('atcd-btn').textContent = 'Start';
+        document.getElementById('atcd-done').classList.add('visible');
+      }
+    }
+
+    function atcdReset() {
+      clearInterval(atcdTicker); atcdTicker = null; atcdRunning = false; atcdStarted = false;
+      atcdRemaining = 0; atcdTotal = 0;
+      document.getElementById('atcd-btn').textContent = 'Start';
+      document.getElementById('atcd-done').classList.remove('visible');
+      document.getElementById('atcd-display').classList.remove('danger');
+      // Recalculate from current added time
+      const roundedMs = roundUpToMinute(atElapsed);
+      const rm = Math.floor(roundedMs/60000), rs = Math.floor((roundedMs%60000)/1000);
+      document.getElementById('atcd-display').innerHTML =
+        pad(rm)+':'+pad(rs)+'<span class="millis">.00</span>';
+      document.getElementById('atcd-source').innerHTML =
+        atElapsed > 0
+          ? 'set from <span>added time</span> &mdash; <span style="color:var(--atcd-color)">'+pad(rm)+'m</span>'
+          : 'set from <span>added time</span>';
+    }
+
+    function pad(n) { return String(n).padStart(2,'0'); }
   </script>
 
 </body>
