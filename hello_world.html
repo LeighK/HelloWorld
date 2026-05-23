@@ -166,8 +166,6 @@
     button:hover { background: var(--btn-hover); }
     button:active { transform: scale(0.96); }
     button.primary { border-color: transparent; }
-    .card.up button.primary { background: var(--up-color); color: #0e0e10; }
-    .card.up button.primary:hover { background: #6ee7a0; }
     .card.down button.primary { background: var(--down-color); color: #0e0e10; }
     .card.down button.primary:hover { background: #fdba74; }
 
@@ -179,6 +177,8 @@
 
     .done-banner { font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #ef4444; display: none; }
     .done-banner.visible { display: block; animation: blink 1s step-end infinite; }
+
+    .sw-hint { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; text-align: center; }
 
     @keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes pulse { 0%, 100% { transform: scale(1); opacity: .6; } 50% { transform: scale(1.6); opacity: 1; } }
@@ -201,15 +201,14 @@
 
   <div class="timers">
 
+    <!-- Stopwatch — controlled by countdown -->
     <div class="card up">
       <div class="card-label">Stopwatch</div>
       <div class="display" id="sw-display">00:00<span class="millis">.00</span></div>
-      <div class="controls">
-        <button class="primary" id="sw-btn" onclick="swToggle()">Start</button>
-        <button onclick="swReset()">Reset</button>
-      </div>
+      <div class="sw-hint">starts with the countdown</div>
     </div>
 
+    <!-- Countdown — controls both -->
     <div class="card down">
       <div class="card-label">Countdown</div>
       <div class="countdown-input-row" id="cd-input-row">
@@ -236,43 +235,54 @@
   </div>
 
   <script>
-    let swInterval = null, swRunning = false, swElapsed = 0, swStart = 0;
+    // --- Shared interval ---
+    let ticker = null;
+    let running = false;
 
-    function swToggle() {
-      if (!swRunning) {
-        swStart = Date.now() - swElapsed;
-        swInterval = setInterval(swTick, 50);
-        swRunning = true;
-        document.getElementById('sw-btn').textContent = 'Pause';
-      } else {
-        clearInterval(swInterval);
-        swRunning = false;
-        document.getElementById('sw-btn').textContent = 'Resume';
+    // Stopwatch state
+    let swElapsed = 0, swStart = 0;
+
+    // Countdown state
+    let cdRemaining = 0, cdTotal = 0, cdStart = 0;
+
+    function tick() {
+      const now = Date.now();
+
+      // Stopwatch
+      swElapsed = now - swStart;
+      const swMs = swElapsed % 1000;
+      const swS = Math.floor(swElapsed / 1000) % 60;
+      const swM = Math.floor(swElapsed / 60000);
+      document.getElementById('sw-display').innerHTML =
+        pad(swM) + ':' + pad(swS) + '<span class="millis">.' + pad(Math.floor(swMs/10)) + '</span>';
+
+      // Countdown
+      cdRemaining = Math.max(0, cdTotal - (now - cdStart));
+      const cdMs = cdRemaining % 1000;
+      const cdS = Math.floor(cdRemaining / 1000) % 60;
+      const cdM = Math.floor(cdRemaining / 60000);
+      const pct = cdTotal > 0 ? cdRemaining / cdTotal : 0;
+
+      document.getElementById('cd-display').innerHTML =
+        pad(cdM) + ':' + pad(cdS) + '<span class="millis">.' + pad(Math.floor(cdMs/10)) + '</span>';
+      document.getElementById('ring-fill').style.strokeDashoffset = 213.6 * (1 - pct);
+      document.getElementById('ring-pct').textContent = Math.ceil(pct * 100) + '%';
+
+      const dispEl = document.getElementById('cd-display');
+      if (cdRemaining <= 10000) dispEl.classList.add('danger');
+      else dispEl.classList.remove('danger');
+
+      if (cdRemaining === 0) {
+        stopAll();
+        document.getElementById('cd-btn').textContent = 'Start';
+        document.getElementById('done-banner').classList.add('visible');
       }
     }
 
-    function swTick() {
-      swElapsed = Date.now() - swStart;
-      const ms = swElapsed % 1000;
-      const s = Math.floor(swElapsed / 1000) % 60;
-      const m = Math.floor(swElapsed / 60000);
-      document.getElementById('sw-display').innerHTML =
-        pad(m) + ':' + pad(s) + '<span class="millis">.' + pad(Math.floor(ms/10)) + '</span>';
-    }
-
-    function swReset() {
-      clearInterval(swInterval);
-      swRunning = false; swElapsed = 0;
-      document.getElementById('sw-btn').textContent = 'Start';
-      document.getElementById('sw-display').innerHTML = '00:00<span class="millis">.00</span>';
-    }
-
-    let cdInterval = null, cdRunning = false, cdRemaining = 0, cdTotal = 0, cdStart = 0;
-
-    function cdGetInput() {
-      const m = parseInt(document.getElementById('cd-min').value) || 0;
-      const s = parseInt(document.getElementById('cd-sec').value) || 0;
-      return (m * 60 + s) * 1000;
+    function stopAll() {
+      clearInterval(ticker);
+      ticker = null;
+      running = false;
     }
 
     function cdToggle() {
@@ -282,7 +292,8 @@
       const ring = document.getElementById('cd-ring');
       const done = document.getElementById('done-banner');
 
-      if (!cdRunning) {
+      if (!running) {
+        // First start
         if (cdRemaining === 0) {
           cdTotal = cdGetInput();
           if (cdTotal === 0) return;
@@ -292,52 +303,38 @@
         inputRow.style.display = 'none';
         display.style.display = '';
         ring.style.display = '';
-        cdStart = Date.now() - (cdTotal - cdRemaining);
-        cdInterval = setInterval(cdTick, 50);
-        cdRunning = true;
+
+        const now = Date.now();
+        cdStart = now - (cdTotal - cdRemaining);
+        swStart = now - swElapsed;
+
+        ticker = setInterval(tick, 50);
+        running = true;
         btn.textContent = 'Pause';
       } else {
-        clearInterval(cdInterval);
-        cdRunning = false;
+        // Pause
+        stopAll();
         btn.textContent = 'Resume';
       }
     }
 
-    function cdTick() {
-      const elapsed = Date.now() - cdStart;
-      cdRemaining = Math.max(0, cdTotal - elapsed);
-      const ms = cdRemaining % 1000;
-      const s = Math.floor(cdRemaining / 1000) % 60;
-      const m = Math.floor(cdRemaining / 60000);
-      const pct = cdTotal > 0 ? cdRemaining / cdTotal : 0;
-      const circumference = 213.6;
-
-      document.getElementById('cd-display').innerHTML =
-        pad(m) + ':' + pad(s) + '<span class="millis">.' + pad(Math.floor(ms/10)) + '</span>';
-      document.getElementById('ring-fill').style.strokeDashoffset = circumference * (1 - pct);
-      document.getElementById('ring-pct').textContent = Math.ceil(pct * 100) + '%';
-
-      const dispEl = document.getElementById('cd-display');
-      if (cdRemaining <= 10000) dispEl.classList.add('danger');
-      else dispEl.classList.remove('danger');
-
-      if (cdRemaining === 0) {
-        clearInterval(cdInterval);
-        cdRunning = false;
-        document.getElementById('cd-btn').textContent = 'Start';
-        document.getElementById('done-banner').classList.add('visible');
-      }
-    }
-
     function cdReset() {
-      clearInterval(cdInterval);
-      cdRunning = false; cdRemaining = 0; cdTotal = 0;
+      stopAll();
+      swElapsed = 0;
+      cdRemaining = 0; cdTotal = 0;
       document.getElementById('cd-btn').textContent = 'Start';
       document.getElementById('cd-display').style.display = 'none';
       document.getElementById('cd-ring').style.display = 'none';
       document.getElementById('cd-input-row').style.display = '';
       document.getElementById('done-banner').classList.remove('visible');
       document.getElementById('cd-display').classList.remove('danger');
+      document.getElementById('sw-display').innerHTML = '00:00<span class="millis">.00</span>';
+    }
+
+    function cdGetInput() {
+      const m = parseInt(document.getElementById('cd-min').value) || 0;
+      const s = parseInt(document.getElementById('cd-sec').value) || 0;
+      return (m * 60 + s) * 1000;
     }
 
     function pad(n) { return String(n).padStart(2, '0'); }
