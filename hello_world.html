@@ -1,25 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello World</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@300&display=swap');
-*{margin:0;padding:0;box-sizing:border-box}
-.scene{min-height:420px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;background:transparent;position:relative;overflow:hidden}
-.bg-circles span{position:absolute;border-radius:50%;opacity:.07}
-.bg-circles .c1{width:320px;height:320px;background:var(--color-text-info);top:-80px;right:-60px}
-.bg-circles .c2{width:200px;height:200px;background:var(--color-text-warning);bottom:-40px;left:-40px}
-.bg-circles .c3{width:120px;height:120px;background:var(--color-text-success);bottom:80px;right:60px}
-.greeting{font-family:'Playfair Display',Georgia,serif;font-size:clamp(52px,10vw,96px);font-weight:700;color:var(--color-text-primary);line-height:1;letter-spacing:-2px;text-align:center;animation:rise 0.9s cubic-bezier(.22,1,.36,1) both}
-.greeting em{font-style:normal;color:var(--color-text-info)}
-.sub{font-family:'Lato',sans-serif;font-weight:300;font-size:16px;letter-spacing:4px;text-transform:uppercase;color:var(--color-text-secondary);margin-top:1.2rem;animation:rise 0.9s 0.2s cubic-bezier(.22,1,.36,1) both;opacity:0}
-.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--color-text-warning);margin:0 6px;vertical-align:middle;animation:pulse 2s 1.2s ease-in-out infinite}
-@keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.6);opacity:1}}
-</style>
-<div class="scene">
-  <div class="bg-circles">
-    <span class="c1"></span>
-    <span class="c2"></span>
-    <span class="c3"></span>
+    :root {
+      --bg: #0e0e10;
+      --surface: #18181c;
+      --border: #2a2a30;
+      --text: #f0f0f0;
+      --muted: #666;
+      --up-color: #4ade80;
+      --down-color: #f97316;
+      --btn-bg: #26262c;
+      --btn-hover: #32323a;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 4rem 1rem;
+      gap: 4rem;
+    }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+      position: relative;
+    }
+
+    .bg-circles span { position: absolute; border-radius: 50%; pointer-events: none; }
+    .bg-circles .c1 { width: 320px; height: 320px; background: #3b82f6; opacity: .06; top: -80px; right: -120px; }
+    .bg-circles .c2 { width: 200px; height: 200px; background: #f59e0b; opacity: .06; bottom: -40px; left: -100px; }
+    .bg-circles .c3 { width: 120px; height: 120px; background: #10b981; opacity: .06; bottom: 40px; right: 20px; }
+
+    .greeting {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(52px, 10vw, 96px);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+      letter-spacing: -2px;
+      text-align: center;
+      animation: rise 0.9s cubic-bezier(.22,1,.36,1) both;
+    }
+    .greeting em { font-style: normal; color: #3b82f6; }
+
+    .sub {
+      font-family: 'DM Mono', monospace;
+      font-weight: 300;
+      font-size: 14px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      animation: rise 0.9s 0.2s cubic-bezier(.22,1,.36,1) both;
+      opacity: 0;
+    }
+    .dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #f59e0b;
+      margin: 0 6px;
+      vertical-align: middle;
+      animation: pulse 2s 1.2s ease-in-out infinite;
+    }
+
+    .divider {
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .divider span {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .timers {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem 2rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      flex: 1;
+      min-width: 280px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0; }
+    .card.up::before { background: var(--up-color); }
+    .card.down::before { background: var(--down-color); }
+
+    .card-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; align-self: flex-start; }
+    .card.up .card-label { color: var(--up-color); }
+    .card.down .card-label { color: var(--down-color); }
+
+    .display { font-family: 'DM Mono', monospace; font-size: clamp(42px, 8vw, 64px); font-weight: 400; letter-spacing: -1px; line-height: 1; }
+    .card.up .display { color: var(--up-color); }
+    .card.down .display { color: var(--down-color); }
+    .card.down .display.danger { color: #ef4444; animation: blink 0.8s step-end infinite; }
+
+    .millis { font-size: 0.35em; color: var(--muted); vertical-align: middle; }
+
+    .countdown-input-row { display: flex; align-items: center; gap: 0.5rem; }
+
+    .time-input {
+      width: 52px;
+      background: var(--btn-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      text-align: center;
+      padding: 6px 4px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .time-input:focus { border-color: var(--down-color); }
+    .sep { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 16px; }
+
+    .controls { display: flex; gap: 0.75rem; }
+
+    button {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 9px 20px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--btn-bg);
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    button:hover { background: var(--btn-hover); }
+    button:active { transform: scale(0.96); }
+    button.primary { border-color: transparent; }
+    .card.up button.primary { background: var(--up-color); color: #0e0e10; }
+    .card.up button.primary:hover { background: #6ee7a0; }
+    .card.down button.primary { background: var(--down-color); color: #0e0e10; }
+    .card.down button.primary:hover { background: #fdba74; }
+
+    .progress-ring { position: relative; width: 80px; height: 80px; }
+    .progress-ring svg { transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: var(--border); stroke-width: 4; }
+    .ring-fill { fill: none; stroke: var(--down-color); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.5s linear; }
+    .ring-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+
+    .done-banner { font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #ef4444; display: none; }
+    .done-banner.visible { display: block; animation: blink 1s step-end infinite; }
+
+    @keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 0%, 100% { transform: scale(1); opacity: .6; } 50% { transform: scale(1.6); opacity: 1; } }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="bg-circles">
+      <span class="c1"></span>
+      <span class="c2"></span>
+      <span class="c3"></span>
+    </div>
+    <div class="greeting"><em>Hello</em> World</div>
+    <div class="sub"><span class="dot"></span> welcome to the web <span class="dot"></span></div>
   </div>
-  <div class="greeting"><em>Hello</em> World</div>
-  <div class="sub"><span class="dot"></span> welcome to the web <span class="dot"></span></div>
-</div>
+
+  <div class="divider"><span>Timers</span></div>
+
+  <div class="timers">
+
+    <div class="card up">
+      <div class="card-label">Stopwatch</div>
+      <div class="display" id="sw-display">00:00<span class="millis">.00</span></div>
+      <div class="controls">
+        <button class="primary" id="sw-btn" onclick="swToggle()">Start</button>
+        <button onclick="swReset()">Reset</button>
+      </div>
+    </div>
+
+    <div class="card down">
+      <div class="card-label">Countdown</div>
+      <div class="countdown-input-row" id="cd-input-row">
+        <input class="time-input" id="cd-min" type="number" min="0" max="99" value="05">
+        <span class="sep">:</span>
+        <input class="time-input" id="cd-sec" type="number" min="0" max="59" value="00">
+        <span class="sep" style="font-size:12px;color:var(--muted);margin-left:4px">min : sec</span>
+      </div>
+      <div class="display" id="cd-display" style="display:none">05:00<span class="millis">.00</span></div>
+      <div class="progress-ring" id="cd-ring" style="display:none">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle class="ring-bg" cx="40" cy="40" r="34"/>
+          <circle class="ring-fill" id="ring-fill" cx="40" cy="40" r="34" stroke-dasharray="213.6" stroke-dashoffset="0"/>
+        </svg>
+        <div class="ring-label" id="ring-pct">100%</div>
+      </div>
+      <div class="done-banner" id="done-banner">Time's up!</div>
+      <div class="controls">
+        <button class="primary" id="cd-btn" onclick="cdToggle()">Start</button>
+        <button onclick="cdReset()">Reset</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let swInterval = null, swRunning = false, swElapsed = 0, swStart = 0;
+
+    function swToggle() {
+      if (!swRunning) {
+        swStart = Date.now() - swElapsed;
+        swInterval = setInterval(swTick, 50);
+        swRunning = true;
+        document.getElementById('sw-btn').textContent = 'Pause';
+      } else {
+        clearInterval(swInterval);
+        swRunning = false;
+        document.getElementById('sw-btn').textContent = 'Resume';
+      }
+    }
+
+    function swTick() {
+      swElapsed = Date.now() - swStart;
+      const ms = swElapsed % 1000;
+      const s = Math.floor(swElapsed / 1000) % 60;
+      const m = Math.floor(swElapsed / 60000);
+      document.getElementById('sw-display').innerHTML =
+        pad(m) + ':' + pad(s) + '<span class="millis">.' + pad(Math.floor(ms/10)) + '</span>';
+    }
+
+    function swReset() {
+      clearInterval(swInterval);
+      swRunning = false; swElapsed = 0;
+      document.getElementById('sw-btn').textContent = 'Start';
+      document.getElementById('sw-display').innerHTML = '00:00<span class="millis">.00</span>';
+    }
+
+    let cdInterval = null, cdRunning = false, cdRemaining = 0, cdTotal = 0, cdStart = 0;
+
+    function cdGetInput() {
+      const m = parseInt(document.getElementById('cd-min').value) || 0;
+      const s = parseInt(document.getElementById('cd-sec').value) || 0;
+      return (m * 60 + s) * 1000;
+    }
+
+    function cdToggle() {
+      const btn = document.getElementById('cd-btn');
+      const inputRow = document.getElementById('cd-input-row');
+      const display = document.getElementById('cd-display');
+      const ring = document.getElementById('cd-ring');
+      const done = document.getElementById('done-banner');
+
+      if (!cdRunning) {
+        if (cdRemaining === 0) {
+          cdTotal = cdGetInput();
+          if (cdTotal === 0) return;
+          cdRemaining = cdTotal;
+        }
+        done.classList.remove('visible');
+        inputRow.style.display = 'none';
+        display.style.display = '';
+        ring.style.display = '';
+        cdStart = Date.now() - (cdTotal - cdRemaining);
+        cdInterval = setInterval(cdTick, 50);
+        cdRunning = true;
+        btn.textContent = 'Pause';
+      } else {
+        clearInterval(cdInterval);
+        cdRunning = false;
+        btn.textContent = 'Resume';
+      }
+    }
+
+    function cdTick() {
+      const elapsed = Date.now() - cdStart;
+      cdRemaining = Math.max(0, cdTotal - elapsed);
+      const ms = cdRemaining % 1000;
+      const s = Math.floor(cdRemaining / 1000) % 60;
+      const m = Math.floor(cdRemaining / 60000);
+      const pct = cdTotal > 0 ? cdRemaining / cdTotal : 0;
+      const circumference = 213.6;
+
+      document.getElementById('cd-display').innerHTML =
+        pad(m) + ':' + pad(s) + '<span class="millis">.' + pad(Math.floor(ms/10)) + '</span>';
+      document.getElementById('ring-fill').style.strokeDashoffset = circumference * (1 - pct);
+      document.getElementById('ring-pct').textContent = Math.ceil(pct * 100) + '%';
+
+      const dispEl = document.getElementById('cd-display');
+      if (cdRemaining <= 10000) dispEl.classList.add('danger');
+      else dispEl.classList.remove('danger');
+
+      if (cdRemaining === 0) {
+        clearInterval(cdInterval);
+        cdRunning = false;
+        document.getElementById('cd-btn').textContent = 'Start';
+        document.getElementById('done-banner').classList.add('visible');
+      }
+    }
+
+    function cdReset() {
+      clearInterval(cdInterval);
+      cdRunning = false; cdRemaining = 0; cdTotal = 0;
+      document.getElementById('cd-btn').textContent = 'Start';
+      document.getElementById('cd-display').style.display = 'none';
+      document.getElementById('cd-ring').style.display = 'none';
+      document.getElementById('cd-input-row').style.display = '';
+      document.getElementById('done-banner').classList.remove('visible');
+      document.getElementById('cd-display').classList.remove('danger');
+    }
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+  </script>
+
+</body>
+</html>
