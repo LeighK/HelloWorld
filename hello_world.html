@@ -5,295 +5,618 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Timers">
-  <meta name="theme-color" content="#0e0e10">
-  <title>Timers</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;500&display=swap" rel="stylesheet">
+  <meta name="apple-mobile-web-app-title" content="All Timers">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>All Timers</title>
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;700&family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     :root {
-      --bg: #0e0e10;
-      --surface: #18181c;
-      --border: #2a2a30;
-      --text: #f0f0f0;
+      --bg: #0a0a0a;
+      --card: #141414;
+      --card2: #1a1a1a;
+      --border: #2a2a2a;
+      --text: #ffffff;
       --muted: #666;
-      --up-color: #4ade80;
-      --down-color: #f97316;
-      --added-color: #a78bfa;
-      --atcd-color: #f472b6;
-      --btn-bg: #26262c;
-      --btn-hover: #32323a;
+      --green: #4cd137;
+      --blue: #4a9eff;
+      --purple: #8b5cf6;
+      --orange: #f59e0b;
+      --red: #ef4444;
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
 
-    html, body {
-      height: 100%;
-      overscroll-behavior: none;
-    }
+    html, body { height: 100%; overscroll-behavior: none; }
 
     body {
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Roboto', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
       min-height: -webkit-fill-available;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      padding: calc(var(--safe-top) + 2rem) 1rem calc(var(--safe-bottom) + 2rem);
-      gap: 2.5rem;
+      padding-top: var(--safe-top);
+      padding-bottom: calc(var(--safe-bottom) + 72px);
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
 
-    .hero {
+    /* ── Top Bar ── */
+    .topbar {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 1rem;
-      position: relative;
+      justify-content: space-between;
+      padding: 14px 20px 10px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg);
     }
-    .bg-circles span { position: absolute; border-radius: 50%; pointer-events: none; }
-    .bg-circles .c1 { width: 260px; height: 260px; background: #3b82f6; opacity: .06; top: -60px; right: -100px; }
-    .bg-circles .c2 { width: 160px; height: 160px; background: #f59e0b; opacity: .06; bottom: -30px; left: -80px; }
-    .bg-circles .c3 { width: 100px; height: 100px; background: #10b981; opacity: .06; bottom: 30px; right: 10px; }
-
-    .greeting {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: clamp(40px, 10vw, 80px);
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1;
-      letter-spacing: -2px;
-      text-align: center;
-      animation: rise 0.9s cubic-bezier(.22,1,.36,1) both;
-    }
-    .greeting em { font-style: normal; color: #3b82f6; }
-
-    .sub {
-      font-family: 'DM Mono', monospace;
-      font-weight: 300;
-      font-size: 12px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--muted);
-      animation: rise 0.9s 0.2s cubic-bezier(.22,1,.36,1) both;
-      opacity: 0;
-    }
-    .dot {
-      display: inline-block;
-      width: 5px; height: 5px;
+    .topbar-menu {
+      width: 40px; height: 40px;
+      background: #222;
       border-radius: 50%;
-      background: #f59e0b;
-      margin: 0 5px;
-      vertical-align: middle;
-      animation: pulse 2s 1.2s ease-in-out infinite;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      border: none;
+      flex-shrink: 0;
+    }
+    .topbar-menu span {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .topbar-menu span i {
+      display: block; width: 16px; height: 2px;
+      background: white; border-radius: 2px;
+    }
+    .topbar-title {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 600;
+      font-size: 17px;
+      letter-spacing: 0.2px;
+    }
+    .topbar-time {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 500;
+      font-size: 17px;
+      min-width: 40px;
+      text-align: right;
     }
 
-    .divider {
-      width: 100%;
-      max-width: 600px;
+    /* Dots */
+    .dot-row {
+      display: flex; justify-content: center;
+      gap: 8px;
+      padding-bottom: 12px;
+    }
+    .dot-row span {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+    }
+    .dot-row .d1 { background: var(--green); }
+    .dot-row .d2 { background: var(--blue); }
+    .dot-row .d3 { background: var(--purple); }
+    .dot-row .d4 { background: var(--orange); }
+
+    /* ── Main scroll area ── */
+    .content {
+      flex: 1;
       display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-    .divider span {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--muted);
+      flex-direction: column;
+      gap: 10px;
+      padding: 0 12px 12px;
     }
 
-    .timers {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      width: 100%;
-      max-width: 600px;
-    }
-
+    /* ── Card base ── */
     .card {
-      background: var(--surface);
+      background: var(--card);
+      border-radius: 18px;
+      overflow: hidden;
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.5rem 1.25rem 1.25rem;
+    }
+
+    /* ── TOP CARD: Countdown + Stopwatch side by side ── */
+    .card-top {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .card-top .half {
+      padding: 16px 14px 14px;
+    }
+    .card-top .half:first-child {
+      border-right: 1px solid var(--border);
+    }
+    .half-label {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .half-label.green { color: var(--green); }
+    .half-label.blue  { color: var(--blue); }
+
+    /* Ring */
+    .ring-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1rem;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .ring-container {
       position: relative;
-      overflow: hidden;
+      width: 110px; height: 110px;
     }
-    .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0; }
-    .card.down::before  { background: var(--down-color); }
-    .card.up::before    { background: var(--up-color); }
-    .card.added::before { background: var(--added-color); }
-    .card.atcd::before  { background: var(--atcd-color); }
+    .ring-container svg { transform: rotate(-90deg); }
+    .ring-bg-c  { fill: none; stroke: #2a2a2a; stroke-width: 7; }
+    .ring-fg-c  { fill: none; stroke: var(--green); stroke-width: 7; stroke-linecap: round; transition: stroke-dashoffset 0.4s linear; }
+    .ring-inner {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .ring-time {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 22px;
+      font-weight: 500;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+    .ring-pct {
+      font-size: 11px;
+      color: var(--green);
+      font-weight: 500;
+      margin-top: 1px;
+    }
 
-    .card-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 3px;
+    /* CD input inside ring */
+    .cd-set-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: 3px;
+    }
+    .cd-set-row input {
+      width: 34px;
+      background: transparent;
+      border: none;
+      color: white;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 20px;
+      font-weight: 500;
+      text-align: center;
+      outline: none;
+      -webkit-appearance: none;
+      padding: 0;
+    }
+    .cd-set-row .colon {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 20px;
+      color: var(--muted);
+      line-height: 1;
+    }
+
+    /* Stopwatch side */
+    .sw-time {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 34px;
+      font-weight: 400;
+      color: white;
+      letter-spacing: -1px;
+      margin-bottom: 4px;
+      line-height: 1;
+    }
+    .sw-millis { font-size: 0.5em; color: var(--muted); }
+    .sw-lap {
+      font-family: 'Roboto', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--blue);
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    /* Buttons */
+    .btn-row {
+      display: flex; gap: 8px;
+      margin-top: 4px;
+    }
+    .btn {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 11px 10px;
+      border-radius: 12px;
+      border: none;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      touch-action: manipulation;
+      min-height: 44px;
+      color: white;
+    }
+    .btn:active { transform: scale(0.94); opacity: 0.85; }
+    .btn-green  { background: var(--green); color: #000; }
+    .btn-stop   { background: #2a2a2a; color: white; }
+    .btn-purple { background: var(--purple); color: white; }
+    .btn-orange { background: var(--orange); color: #000; }
+    .btn-reset  { background: #222; color: white; border: 1px solid #333; }
+    .btn svg { flex-shrink: 0; }
+
+    /* ── Row card (Added Time / ATCD) ── */
+    .card-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 0;
+      position: relative;
+    }
+    .row-accent {
+      width: 4px;
+      align-self: stretch;
+      border-radius: 0 0 0 0;
+      flex-shrink: 0;
+    }
+    .row-accent.purple { background: var(--purple); }
+    .row-accent.orange { background: var(--orange); }
+
+    .row-body {
+      flex: 1;
+      padding: 14px 12px 14px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .row-label {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      align-self: flex-start;
-      line-height: 1.3;
     }
-    .card.down .card-label  { color: var(--down-color); }
-    .card.up .card-label    { color: var(--up-color); }
-    .card.added .card-label { color: var(--added-color); }
-    .card.atcd .card-label  { color: var(--atcd-color); }
+    .row-label.purple { color: var(--purple); }
+    .row-label.orange { color: var(--orange); }
 
-    .display {
-      font-family: 'DM Mono', monospace;
-      font-size: clamp(28px, 7vw, 42px);
+    .row-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* small ring for row cards */
+    .mini-ring { position: relative; width: 52px; height: 52px; flex-shrink: 0; }
+    .mini-ring svg { transform: rotate(-90deg); }
+    .mini-ring-bg  { fill: none; stroke: #2a2a2a; stroke-width: 5; }
+    .mini-ring-fg  { fill: none; stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 0.4s linear; }
+    .mini-ring-fg.purple { stroke: var(--purple); }
+    .mini-ring-fg.orange { stroke: var(--orange); }
+    .mini-pct {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Roboto', sans-serif;
+      font-size: 9px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .row-info { flex: 1; }
+    .row-time {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 36px;
       font-weight: 400;
       letter-spacing: -1px;
       line-height: 1;
     }
-    .card.down .display  { color: var(--down-color); }
-    .card.up .display    { color: var(--up-color); }
-    .card.added .display { color: var(--added-color); }
-    .card.atcd .display  { color: var(--atcd-color); }
-    .card.down .display.danger { color: #ef4444; animation: blink 0.8s step-end infinite; }
-    .card.atcd .display.danger { color: #ef4444; animation: blink 0.8s step-end infinite; }
-
-    .millis { font-size: 0.4em; color: var(--muted); vertical-align: middle; }
-
-    .countdown-input-row { display: flex; align-items: center; gap: 0.4rem; }
-    .time-input {
-      width: 46px;
-      background: var(--btn-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-family: 'DM Mono', monospace;
-      font-size: 14px;
-      text-align: center;
-      padding: 6px 2px;
-      outline: none;
-      transition: border-color 0.2s;
-      -webkit-appearance: none;
+    .row-time.purple { color: var(--purple); }
+    .row-time.orange { color: var(--orange); }
+    .row-time.danger { color: var(--red); animation: blink 0.8s step-end infinite; }
+    .row-time .rm { font-size: 0.42em; color: var(--muted); vertical-align: middle; }
+    .row-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
     }
-    .time-input:focus { border-color: var(--down-color); }
-    .sep { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 14px; }
+    .row-sub span { color: var(--purple); }
 
-    .controls { display: flex; gap: 0.5rem; }
-
-    button {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      padding: 10px 16px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--btn-bg);
-      color: var(--text);
+    .row-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      padding: 14px 12px 14px 0;
+      align-items: flex-end;
+    }
+    .btn-sq {
+      width: 60px; height: 60px;
+      border-radius: 14px;
+      border: none;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 3px;
       cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
+      font-family: 'Roboto', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
       touch-action: manipulation;
-      min-height: 44px;
+      transition: opacity 0.15s, transform 0.1s;
+      color: white;
     }
-    button:active { transform: scale(0.94); }
-    button.primary { border-color: transparent; }
-    .card.down button.primary  { background: var(--down-color); color: #0e0e10; }
-    .card.down button.primary:active { background: #fdba74; }
-    .card.added button.primary { background: var(--added-color); color: #0e0e10; }
-    .card.added button.primary:active { background: #c4b5fd; }
-    .card.atcd button.primary  { background: var(--atcd-color); color: #0e0e10; }
-    .card.atcd button.primary:active { background: #f9a8d4; }
+    .btn-sq:active { transform: scale(0.92); }
+    .btn-sq.purple { background: var(--purple); }
+    .btn-sq.orange { background: var(--orange); color: #000; }
+    .btn-sq.grey   { background: #232323; border: 1px solid #333; }
 
-    .progress-ring { position: relative; width: 64px; height: 64px; }
-    .progress-ring svg { transform: rotate(-90deg); }
-    .ring-bg   { fill: none; stroke: var(--border); stroke-width: 3.5; }
-    .ring-fill { fill: none; stroke: var(--down-color); stroke-width: 3.5; stroke-linecap: round; transition: stroke-dashoffset 0.5s linear; }
-    .ring-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+    .done-badge {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--red);
+      font-weight: 700;
+      display: none;
+      animation: blink 1s step-end infinite;
+    }
+    .done-badge.visible { display: block; }
 
-    .done-banner { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #ef4444; display: none; }
-    .done-banner.visible { display: block; animation: blink 1s step-end infinite; }
+    /* ── Reset All ── */
+    .card-reset {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px;
+      cursor: pointer;
+      border: none;
+      background: var(--card);
+      color: white;
+      width: 100%;
+      border-radius: 18px;
+      font-family: 'Roboto', sans-serif;
+    }
+    .card-reset:active { opacity: 0.7; }
+    .reset-text { display: flex; flex-direction: column; align-items: flex-start; }
+    .reset-title { font-weight: 600; font-size: 15px; }
+    .reset-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
 
-    .sw-hint { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; text-align: center; }
+    /* ── Bottom Nav ── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #111;
+      border-top: 1px solid #222;
+      display: flex;
+      padding-bottom: var(--safe-bottom);
+      z-index: 20;
+    }
+    .nav-item {
+      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 10px 0 8px;
+      gap: 4px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Roboto', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      position: relative;
+      touch-action: manipulation;
+    }
+    .nav-item.active { color: var(--green); }
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 20%; right: 20%;
+      height: 2px;
+      background: var(--green);
+      border-radius: 2px 2px 0 0;
+    }
+    .nav-icon {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      border: 2.5px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .nav-icon.plus::before, .nav-icon.plus::after {
+      content: '';
+      position: absolute;
+      background: currentColor;
+      border-radius: 1px;
+    }
+    .nav-icon.plus::before { width: 10px; height: 2px; }
+    .nav-icon.plus::after  { width: 2px; height: 10px; }
+    .nav-dot {
+      width: 6px; height: 6px;
+      background: currentColor;
+      border-radius: 50%;
+    }
+    .nav-hand {
+      width: 1.5px; height: 7px;
+      background: currentColor;
+      transform-origin: bottom center;
+      transform: rotate(-20deg) translateX(1px);
+    }
 
-    .atcd-source { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; text-align: center; }
-    .atcd-source span { color: var(--added-color); }
-
-    @keyframes rise  { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes pulse { 0%, 100% { transform: scale(1); opacity: .6; } 50% { transform: scale(1.6); opacity: 1; } }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* Prevent double-tap zoom */
+    * { touch-action: manipulation; }
   </style>
 </head>
 <body>
 
-  <div class="hero">
-    <div class="bg-circles">
-      <span class="c1"></span><span class="c2"></span><span class="c3"></span>
-    </div>
-    <div class="greeting"><em>Hello</em> World</div>
-    <div class="sub"><span class="dot"></span> welcome to the web <span class="dot"></span></div>
+  <!-- Top Bar -->
+  <div class="topbar">
+    <button class="topbar-menu" aria-label="Menu">
+      <span><i></i><i></i><i></i></span>
+    </button>
+    <div class="topbar-title">All Timers</div>
+    <div class="topbar-time" id="clock">--:--</div>
+  </div>
+  <div class="dot-row">
+    <span class="d1"></span><span class="d2"></span>
+    <span class="d3"></span><span class="d4"></span>
   </div>
 
-  <div class="divider"><span>Timers</span></div>
+  <div class="content">
 
-  <div class="timers">
+    <!-- TOP CARD: Countdown + Stopwatch -->
+    <div class="card card-top">
+      <!-- Countdown half -->
+      <div class="half">
+        <div class="half-label green">Countdown</div>
+        <div class="ring-wrap">
+          <div class="ring-container" id="cd-ring-wrap">
+            <svg width="110" height="110" viewBox="0 0 110 110">
+              <circle class="ring-bg-c" cx="55" cy="55" r="46"/>
+              <circle class="ring-fg-c" id="cd-ring-fg" cx="55" cy="55" r="46"
+                stroke-dasharray="289.0" stroke-dashoffset="0"/>
+            </svg>
+            <div class="ring-inner">
+              <!-- Input mode -->
+              <div id="cd-input-mode">
+                <div class="cd-set-row">
+                  <input id="cd-min" type="number" min="0" max="99" value="05">
+                  <span class="colon">:</span>
+                  <input id="cd-sec" type="number" min="0" max="59" value="00">
+                </div>
+              </div>
+              <!-- Running mode -->
+              <div id="cd-run-mode" style="display:none; text-align:center;">
+                <div class="ring-time" id="cd-time-display">05:00</div>
+                <div class="ring-pct" id="cd-pct">100%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-green" id="cd-btn" onclick="cdToggle()">
+            <svg width="12" height="14" viewBox="0 0 12 14" fill="currentColor"><path d="M0 0l12 7L0 14z"/></svg>
+            <span id="cd-btn-label">Start</span>
+          </button>
+          <button class="btn btn-stop" onclick="cdReset()">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="currentColor"><rect width="11" height="11" rx="2"/></svg>
+            Stop
+          </button>
+        </div>
+        <div class="done-badge" id="cd-done" style="margin-top:6px;text-align:center;">Time's up!</div>
+      </div>
 
-    <!-- 1. Countdown -->
-    <div class="card down">
-      <div class="card-label">Countdown</div>
-      <div class="countdown-input-row" id="cd-input-row">
-        <input class="time-input" id="cd-min" type="number" min="0" max="99" value="05">
-        <span class="sep">:</span>
-        <input class="time-input" id="cd-sec" type="number" min="0" max="59" value="00">
+      <!-- Stopwatch half -->
+      <div class="half" style="display:flex;flex-direction:column;justify-content:space-between;">
+        <div class="half-label blue">Stopwatch</div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:8px 0;">
+          <div class="sw-time" id="sw-display">00:00<span class="sw-millis">.00</span></div>
+          <div class="sw-lap">Starts with countdown</div>
+        </div>
       </div>
-      <div class="display" id="cd-display" style="display:none">05:00<span class="millis">.00</span></div>
-      <div class="progress-ring" id="cd-ring" style="display:none">
-        <svg width="64" height="64" viewBox="0 0 64 64">
-          <circle class="ring-bg" cx="32" cy="32" r="27"/>
-          <circle class="ring-fill" id="ring-fill" cx="32" cy="32" r="27" stroke-dasharray="169.6" stroke-dashoffset="0"/>
-        </svg>
-        <div class="ring-label" id="ring-pct">100%</div>
+    </div>
+
+    <!-- ADDED TIME -->
+    <div class="card card-row">
+      <div class="row-accent purple"></div>
+      <div class="row-body">
+        <div class="row-label purple">Added Time</div>
+        <div class="row-main">
+          <div class="row-info">
+            <div class="row-time purple" id="at-display">00:00<span class="rm">.00</span></div>
+            <div class="row-sub">Total Added</div>
+          </div>
+        </div>
       </div>
-      <div class="done-banner" id="done-banner">Time's up!</div>
-      <div class="controls">
-        <button class="primary" id="cd-btn" onclick="cdToggle()">Start</button>
-        <button onclick="cdReset()">Reset</button>
+      <div class="row-actions">
+        <button class="btn-sq purple" id="at-btn" onclick="atToggle()">
+          <svg width="14" height="16" viewBox="0 0 14 16" fill="white"><path d="M0 0l14 8L0 16z"/></svg>
+          <span id="at-btn-label">Start</span>
+        </button>
+        <button class="btn-sq grey" onclick="atReset()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M13.5 8A5.5 5.5 0 1 1 10 3.07"/><polyline points="10,1 10,4 13,4"/></svg>
+          <span style="font-size:10px;color:#aaa;">Reset</span>
+        </button>
       </div>
     </div>
 
-    <!-- 2. Stopwatch -->
-    <div class="card up">
-      <div class="card-label">Stopwatch</div>
-      <div class="display" id="sw-display">00:00<span class="millis">.00</span></div>
-      <div class="sw-hint">starts with countdown</div>
-    </div>
-
-    <!-- 3. Added Time -->
-    <div class="card added">
-      <div class="card-label">Added Time</div>
-      <div class="display" id="at-display">00:00<span class="millis">.00</span></div>
-      <div class="controls">
-        <button class="primary" id="at-btn" onclick="atToggle()">Start</button>
-        <button onclick="atReset()">Reset</button>
+    <!-- ADDED TIME COUNTDOWN -->
+    <div class="card card-row">
+      <div class="row-accent orange"></div>
+      <div class="row-body">
+        <div class="row-label orange">Added Time Countdown</div>
+        <div class="row-main">
+          <div class="mini-ring" id="atcd-mini-ring">
+            <svg width="52" height="52" viewBox="0 0 52 52">
+              <circle class="mini-ring-bg" cx="26" cy="26" r="21"/>
+              <circle class="mini-ring-fg orange" id="atcd-ring-fg" cx="26" cy="26" r="21"
+                stroke-dasharray="131.9" stroke-dashoffset="0"/>
+            </svg>
+            <div class="mini-pct" id="atcd-ring-pct">100%</div>
+          </div>
+          <div class="row-info">
+            <div class="row-time orange" id="atcd-display">00:00<span class="rm">.00</span></div>
+            <div class="row-sub" id="atcd-source">set from <span>added time</span></div>
+            <div class="done-badge" id="atcd-done">Time's up!</div>
+          </div>
+        </div>
+      </div>
+      <div class="row-actions">
+        <button class="btn-sq orange" id="atcd-btn" onclick="atcdToggle()">
+          <svg width="14" height="16" viewBox="0 0 14 16" fill="#000"><path d="M0 0l14 8L0 16z"/></svg>
+          <span id="atcd-btn-label" style="color:#000;">Start</span>
+        </button>
+        <button class="btn-sq grey" onclick="atcdReset()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M13.5 8A5.5 5.5 0 1 1 10 3.07"/><polyline points="10,1 10,4 13,4"/></svg>
+          <span style="font-size:10px;color:#aaa;">Reset</span>
+        </button>
       </div>
     </div>
 
-    <!-- 4. Added Time Countdown -->
-    <div class="card atcd">
-      <div class="card-label">Added Time Countdown</div>
-      <div class="display" id="atcd-display">00:00<span class="millis">.00</span></div>
-      <div class="atcd-source" id="atcd-source">set from <span>added time</span></div>
-      <div class="done-banner" id="atcd-done">Time's up!</div>
-      <div class="controls">
-        <button class="primary" id="atcd-btn" onclick="atcdToggle()">Start</button>
-        <button onclick="atcdReset()">Reset</button>
+    <!-- RESET ALL -->
+    <button class="card card-reset" onclick="resetAll()">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round">
+        <path d="M19 11A8 8 0 1 1 14 4.1"/><polyline points="14,1 14,5 18,5"/>
+      </svg>
+      <div class="reset-text">
+        <div class="reset-title">Reset All</div>
+        <div class="reset-sub">Reset all timers and added time</div>
       </div>
-    </div>
+    </button>
 
   </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <button class="nav-item active">
+      <div class="nav-icon"><div class="nav-dot"></div></div>
+      Countdown
+    </button>
+    <button class="nav-item">
+      <div class="nav-icon"><div class="nav-hand"></div></div>
+      Stopwatch
+    </button>
+    <button class="nav-item">
+      <div class="nav-icon plus"></div>
+      Added Time
+    </button>
+    <button class="nav-item" style="color: var(--orange);">
+      <div class="nav-icon" style="border-color:var(--orange);"></div>
+      Added CD
+    </button>
+  </nav>
 
   <script>
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2,'0');
+      const m = String(now.getMinutes()).padStart(2,'0');
+      document.getElementById('clock').textContent = h+':'+m;
+    }
+    updateClock(); setInterval(updateClock, 10000);
+
     // ── 1 & 2: Countdown + Stopwatch ──
     let mainTicker = null, mainRunning = false;
     let swElapsed = 0, swStart = 0;
@@ -304,60 +627,53 @@
       swElapsed = now - swStart;
       const swMs = swElapsed%1000, swS = Math.floor(swElapsed/1000)%60, swM = Math.floor(swElapsed/60000);
       document.getElementById('sw-display').innerHTML =
-        pad(swM)+':'+pad(swS)+'<span class="millis">.'+pad(Math.floor(swMs/10))+'</span>';
+        pad(swM)+':'+pad(swS)+'<span class="sw-millis">.'+pad(Math.floor(swMs/10))+'</span>';
 
-      cdRemaining = Math.max(0, cdTotal - (now - cdStart));
-      const cdMs = cdRemaining%1000, cdS = Math.floor(cdRemaining/1000)%60, cdM = Math.floor(cdRemaining/60000);
+      cdRemaining = Math.max(0, cdTotal-(now-cdStart));
+      const cdS = Math.floor(cdRemaining/1000)%60, cdM = Math.floor(cdRemaining/60000);
       const pct = cdTotal > 0 ? cdRemaining/cdTotal : 0;
-      document.getElementById('cd-display').innerHTML =
-        pad(cdM)+':'+pad(cdS)+'<span class="millis">.'+pad(Math.floor(cdMs/10))+'</span>';
-      document.getElementById('ring-fill').style.strokeDashoffset = 169.6*(1-pct);
-      document.getElementById('ring-pct').textContent = Math.ceil(pct*100)+'%';
-
-      const disp = document.getElementById('cd-display');
-      if (cdRemaining <= 10000) disp.classList.add('danger'); else disp.classList.remove('danger');
+      document.getElementById('cd-time-display').textContent = pad(cdM)+':'+pad(cdS);
+      document.getElementById('cd-pct').textContent = Math.ceil(pct*100)+'%';
+      document.getElementById('cd-ring-fg').style.strokeDashoffset = 289.0*(1-pct);
 
       if (cdRemaining === 0) {
         clearInterval(mainTicker); mainTicker = null; mainRunning = false;
-        document.getElementById('cd-btn').textContent = 'Start';
-        document.getElementById('done-banner').classList.add('visible');
+        document.getElementById('cd-btn-label').textContent = 'Start';
+        document.getElementById('cd-done').classList.add('visible');
       }
     }
 
     function cdToggle() {
-      const btn = document.getElementById('cd-btn');
       if (!mainRunning) {
         if (cdRemaining === 0) {
           cdTotal = cdGetInput();
           if (cdTotal === 0) return;
           cdRemaining = cdTotal;
         }
-        document.getElementById('done-banner').classList.remove('visible');
-        document.getElementById('cd-input-row').style.display = 'none';
-        document.getElementById('cd-display').style.display = '';
-        document.getElementById('cd-ring').style.display = '';
+        document.getElementById('cd-done').classList.remove('visible');
+        document.getElementById('cd-input-mode').style.display = 'none';
+        document.getElementById('cd-run-mode').style.display = 'block';
         const now = Date.now();
-        cdStart = now - (cdTotal - cdRemaining);
-        swStart = now - swElapsed;
+        cdStart = now-(cdTotal-cdRemaining);
+        swStart = now-swElapsed;
         mainTicker = setInterval(mainTick, 50);
         mainRunning = true;
-        btn.textContent = 'Pause';
+        document.getElementById('cd-btn-label').textContent = 'Pause';
       } else {
         clearInterval(mainTicker); mainTicker = null; mainRunning = false;
-        btn.textContent = 'Resume';
+        document.getElementById('cd-btn-label').textContent = 'Resume';
       }
     }
 
     function cdReset() {
       clearInterval(mainTicker); mainTicker = null; mainRunning = false;
       swElapsed = 0; cdRemaining = 0; cdTotal = 0;
-      document.getElementById('cd-btn').textContent = 'Start';
-      document.getElementById('cd-display').style.display = 'none';
-      document.getElementById('cd-ring').style.display = 'none';
-      document.getElementById('cd-input-row').style.display = '';
-      document.getElementById('done-banner').classList.remove('visible');
-      document.getElementById('cd-display').classList.remove('danger');
-      document.getElementById('sw-display').innerHTML = '00:00<span class="millis">.00</span>';
+      document.getElementById('cd-btn-label').textContent = 'Start';
+      document.getElementById('cd-input-mode').style.display = 'block';
+      document.getElementById('cd-run-mode').style.display = 'none';
+      document.getElementById('cd-ring-fg').style.strokeDashoffset = 0;
+      document.getElementById('cd-done').classList.remove('visible');
+      document.getElementById('sw-display').innerHTML = '00:00<span class="sw-millis">.00</span>';
     }
 
     function cdGetInput() {
@@ -370,41 +686,43 @@
     let atTicker = null, atRunning = false, atElapsed = 0, atStart = 0;
 
     function atToggle() {
-      const btn = document.getElementById('at-btn');
       if (!atRunning) {
-        atStart = Date.now() - atElapsed;
+        atStart = Date.now()-atElapsed;
         atTicker = setInterval(atTick, 50);
         atRunning = true;
-        btn.textContent = 'Pause';
+        document.getElementById('at-btn-label').textContent = 'Pause';
       } else {
         clearInterval(atTicker); atTicker = null; atRunning = false;
-        btn.textContent = 'Resume';
+        document.getElementById('at-btn-label').textContent = 'Resume';
       }
     }
 
     function atTick() {
-      atElapsed = Date.now() - atStart;
+      atElapsed = Date.now()-atStart;
       const ms = atElapsed%1000, s = Math.floor(atElapsed/1000)%60, m = Math.floor(atElapsed/60000);
       document.getElementById('at-display').innerHTML =
-        pad(m)+':'+pad(s)+'<span class="millis">.'+pad(Math.floor(ms/10))+'</span>';
-      if (!atcdStarted) {
-        const roundedMs = roundUpToMinute(atElapsed);
-        const rm = Math.floor(roundedMs/60000), rs = Math.floor((roundedMs%60000)/1000);
-        document.getElementById('atcd-display').innerHTML =
-          pad(rm)+':'+pad(rs)+'<span class="millis">.00</span>';
-        document.getElementById('atcd-source').innerHTML =
-          'set from <span>added time</span> &mdash; <span style="color:var(--atcd-color)">'+pad(rm)+'m</span>';
-      }
+        pad(m)+':'+pad(s)+'<span class="rm">.'+pad(Math.floor(ms/10))+'</span>';
+      if (!atcdStarted) syncAtcdDisplay();
     }
 
     function atReset() {
       clearInterval(atTicker); atTicker = null; atRunning = false; atElapsed = 0;
-      document.getElementById('at-btn').textContent = 'Start';
-      document.getElementById('at-display').innerHTML = '00:00<span class="millis">.00</span>';
-      if (!atcdStarted) {
-        document.getElementById('atcd-display').innerHTML = '00:00<span class="millis">.00</span>';
-        document.getElementById('atcd-source').innerHTML = 'set from <span>added time</span>';
-      }
+      document.getElementById('at-btn-label').textContent = 'Start';
+      document.getElementById('at-display').innerHTML = '00:00<span class="rm">.00</span>';
+      if (!atcdStarted) syncAtcdDisplay();
+    }
+
+    function syncAtcdDisplay() {
+      const rounded = roundUpToMinute(atElapsed);
+      const rm = Math.floor(rounded/60000), rs = Math.floor((rounded%60000)/1000);
+      document.getElementById('atcd-display').innerHTML =
+        pad(rm)+':'+pad(rs)+'<span class="rm">.00</span>';
+      document.getElementById('atcd-source').innerHTML =
+        rounded > 0
+          ? 'set from <span style="color:var(--purple)">added time</span> &mdash; <span style="color:var(--orange)">'+pad(rm)+'m</span>'
+          : 'set from <span style="color:var(--purple)">added time</span>';
+      document.getElementById('atcd-ring-fg').style.strokeDashoffset = 0;
+      document.getElementById('atcd-ring-pct').textContent = '100%';
     }
 
     // ── 4: Added Time Countdown ──
@@ -413,11 +731,10 @@
 
     function roundUpToMinute(ms) {
       if (ms === 0) return 0;
-      return Math.ceil(ms / 60000) * 60000;
+      return Math.ceil(ms/60000)*60000;
     }
 
     function atcdToggle() {
-      const btn = document.getElementById('atcd-btn');
       if (!atcdRunning) {
         if (!atcdStarted) {
           atcdTotal = roundUpToMinute(atElapsed);
@@ -426,28 +743,28 @@
           atcdStarted = true;
         }
         document.getElementById('atcd-done').classList.remove('visible');
-        atcdStart = Date.now() - (atcdTotal - atcdRemaining);
+        atcdStart = Date.now()-(atcdTotal-atcdRemaining);
         atcdTicker = setInterval(atcdTick, 50);
         atcdRunning = true;
-        btn.textContent = 'Pause';
+        document.getElementById('atcd-btn-label').textContent = 'Pause';
       } else {
         clearInterval(atcdTicker); atcdTicker = null; atcdRunning = false;
-        btn.textContent = 'Resume';
+        document.getElementById('atcd-btn-label').textContent = 'Resume';
       }
     }
 
     function atcdTick() {
-      atcdRemaining = Math.max(0, atcdTotal - (Date.now() - atcdStart));
+      atcdRemaining = Math.max(0, atcdTotal-(Date.now()-atcdStart));
       const ms = atcdRemaining%1000, s = Math.floor(atcdRemaining/1000)%60, m = Math.floor(atcdRemaining/60000);
-      document.getElementById('atcd-display').innerHTML =
-        pad(m)+':'+pad(s)+'<span class="millis">.'+pad(Math.floor(ms/10))+'</span>';
-
+      const pct = atcdTotal > 0 ? atcdRemaining/atcdTotal : 0;
       const disp = document.getElementById('atcd-display');
+      disp.innerHTML = pad(m)+':'+pad(s)+'<span class="rm">.'+pad(Math.floor(ms/10))+'</span>';
       if (atcdRemaining <= 10000) disp.classList.add('danger'); else disp.classList.remove('danger');
-
+      document.getElementById('atcd-ring-fg').style.strokeDashoffset = 131.9*(1-pct);
+      document.getElementById('atcd-ring-pct').textContent = Math.ceil(pct*100)+'%';
       if (atcdRemaining === 0) {
         clearInterval(atcdTicker); atcdTicker = null; atcdRunning = false;
-        document.getElementById('atcd-btn').textContent = 'Start';
+        document.getElementById('atcd-btn-label').textContent = 'Start';
         document.getElementById('atcd-done').classList.add('visible');
       }
     }
@@ -455,29 +772,25 @@
     function atcdReset() {
       clearInterval(atcdTicker); atcdTicker = null; atcdRunning = false; atcdStarted = false;
       atcdRemaining = 0; atcdTotal = 0;
-      document.getElementById('atcd-btn').textContent = 'Start';
+      document.getElementById('atcd-btn-label').textContent = 'Start';
       document.getElementById('atcd-done').classList.remove('visible');
       document.getElementById('atcd-display').classList.remove('danger');
-      const roundedMs = roundUpToMinute(atElapsed);
-      const rm = Math.floor(roundedMs/60000), rs = Math.floor((roundedMs%60000)/1000);
-      document.getElementById('atcd-display').innerHTML =
-        pad(rm)+':'+pad(rs)+'<span class="millis">.00</span>';
-      document.getElementById('atcd-source').innerHTML =
-        atElapsed > 0
-          ? 'set from <span>added time</span> &mdash; <span style="color:var(--atcd-color)">'+pad(rm)+'m</span>'
-          : 'set from <span>added time</span>';
+      syncAtcdDisplay();
+    }
+
+    function resetAll() {
+      cdReset(); atReset(); atcdReset();
     }
 
     function pad(n) { return String(n).padStart(2,'0'); }
 
-    // Prevent double-tap zoom on iOS
+    // Prevent double-tap zoom
     let lastTap = 0;
     document.addEventListener('touchend', function(e) {
       const now = Date.now();
-      if (now - lastTap < 300) e.preventDefault();
+      if (now-lastTap < 300) e.preventDefault();
       lastTap = now;
     }, { passive: false });
   </script>
-
 </body>
 </html>
